@@ -689,6 +689,11 @@
                 const item = document.createElement("div");
                 item.className = "gallery-item template-item";
                 
+                let badge = "";
+                if (template.is_public) {
+                    badge = `<span style="position:absolute; top:10px; right:10px; background:#e879f9; color:white; padding:2px 8px; border-radius:10px; font-size:0.7rem; z-index:2;">Sistema</span>`;
+                }
+
                 const imgElement = document.createElement('img');
                 imgElement.src = secureUrl;
                 imgElement.alt = `Template ${index + 1}`;
@@ -697,19 +702,34 @@
                     viewTemplate(template.uuid, secureUrl);
                 });
 
+                item.innerHTML = badge; // Insertamos el badge antes de la imagen
                 item.appendChild(imgElement);
                 templatesGrid.appendChild(item);
             });
         }
 
         async function loadUserPhotosAndTemplates() {
-            await loadCarouselImages();
+                // 1. Cargar carrusel de imágenes integradas
+                await loadCarouselImages();
 
-            const templatesData = await fetchData("/templates/my");
-            if (templatesData) {
-                renderTemplates(templatesData);
+                // 2. Cargar mis plantillas privadas
+                const myTemplates = await fetchData("/templates/my") || [];
+
+                // 3. Cargar plantillas públicas (generadas con prompts) 
+                const publicTemplates = await fetchData("/templates/public") || [];
+
+                // 4. Combinar ambas listas
+                const allTemplates = [...publicTemplates, ...myTemplates];
+
+                // 5. Renderizar todo junto
+                if (allTemplates.length > 0) {
+                    renderTemplates(allTemplates);
+                } else {
+                    // Si no hay ninguna, mostrar mensaje de vacío
+                    document.getElementById("templates-grid").innerHTML = "";
+                    document.getElementById("templates-empty").style.display = "block";
+                }
             }
-        }
 
         function viewTemplate(uuid, url) {
             const viewer = document.getElementById("photo-viewer");
