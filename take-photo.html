@@ -170,42 +170,61 @@
                 return [];
             }
         }
-        
-        // Función para cargar templates 
-        async function loadTemplates() {
-            const templates = await fetchData(API_TEMPLATES_ENDPOINT);
-            templatesGrid.innerHTML = '';
 
-            if (templates.length === 0) {
-                templateMessage.textContent = 'No hay plantillas disponibles.';
-                captureBtn.disabled = true;
-                return;
-            }
+        // Función para cargar templates (Privados + Públicos)
+            async function loadTemplates() {
+                // 1. Cargar mis plantillas privadas
+                const myTemplates = await fetchData('/templates/my') || [];
 
-            templateMessage.textContent = 'Selecciona una plantilla.';
-            
-            templates.forEach((template, index) => {
-                const item = document.createElement('div');
-                item.className = 'template-selection-item';
-                item.dataset.uuid = template.uuid;
-                item.innerHTML = `<img src="${template.url}" alt="Template ${index + 1}">`;
-                
-                item.addEventListener('click', () => {
-                    document.querySelectorAll('.template-selection-item').forEach(i => i.classList.remove('selected'));
-                    item.classList.add('selected');
-                    selectedTemplateId = template.uuid;
-                    captureBtn.disabled = false;
-                    messageDiv.textContent = 'Plantilla seleccionada. ¡Lista para capturar!';
-                });
-                
-                templatesGrid.appendChild(item);
-                
-                // Seleccionar la primera por defecto
-                if (index === 0) {
-                    item.click();
+                // 2. Cargar plantillas públicas (del sistema)
+                const publicTemplates = await fetchData('/templates/public') || [];
+
+                // 3. Combinar ambas listas (ponemos las públicas primero para que se vean al principio)
+                const allTemplates = [...publicTemplates, ...myTemplates];
+
+                templatesGrid.innerHTML = '';
+
+                if (allTemplates.length === 0) {
+                    templateMessage.textContent = 'No hay plantillas disponibles.';
+                    captureBtn.disabled = true;
+                    return;
                 }
-            });
-        }
+
+                templateMessage.textContent = 'Selecciona una plantilla.';
+
+                allTemplates.forEach((template, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'template-selection-item';
+                    item.dataset.uuid = template.uuid;
+
+                    // (Opcional) Agregamos un pequeño punto rosa si es una plantilla pública/sistema
+                    let publicBadge = "";
+                    if (template.is_public) {
+                        publicBadge = `<div style="position:absolute; top:5px; right:5px; background:#e879f9; color:white; font-size:10px; padding:2px 6px; border-radius:10px; z-index:2; box-shadow:0 2px 4px rgba(0,0,0,0.5);">Sistema</div>`;
+                    }
+
+                    // Renderizamos la imagen y el badge
+                    item.innerHTML = `
+                    ${publicBadge}
+                    <img src="${template.url}" alt="Template ${index + 1}">
+                `;
+
+                    item.addEventListener('click', () => {
+                        document.querySelectorAll('.template-selection-item').forEach(i => i.classList.remove('selected'));
+                        item.classList.add('selected');
+                        selectedTemplateId = template.uuid;
+                        captureBtn.disabled = false;
+                        messageDiv.textContent = 'Plantilla seleccionada. ¡Lista para capturar!';
+                    });
+
+                    templatesGrid.appendChild(item);
+
+                    // Seleccionar la primera por defecto
+                    if (index === 0) {
+                        item.click();
+                    }
+                });
+            }
         
         // --- FUNCIÓN DE TEMPORIZADOR ---
         function startCountdown(duration) {
@@ -304,6 +323,8 @@
                     const userId = tokenPayload.user_id || tokenPayload.sub; // Usa sub si user_id no existe
                     
                     const qrUrlBase = `${API_BASE_URL}/templates/image/${userId}/${imageUuid}.png`;
+
+                    localStorage.setItem('lastPhotoUrl', qrUrlBase);
                     
                     messageDiv.textContent = '¡Integración exitosa! Generando QR...';
                     window.location.href = `qr.html?url=${encodeURIComponent(qrUrlBase)}`;

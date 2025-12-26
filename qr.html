@@ -1,188 +1,166 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Totem Photo - QR</title>
-    <link rel="stylesheet" href="css/styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-  </head>
 
-  <body>
-    <div class="container">
-      <div class="app-container">
-        <div class="header">
-          <div class="header-content">
-            <h1>Totem Photo</h1>
-            <p>Escanea para conectar</p>
-          </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Totem Photo - QR</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+</head>
 
-          <button class="menu-toggle">
-            <i class="fas fa-bars"></i>
-          </button>
-
-          <div class="dropdown-menu">
-            <a href="photos.html" class="dropdown-item"
-              ><i class="fas fa-images"></i> Galería Principal</a
-            >
-            <a href="take-photo.html" class="dropdown-item"
-              ><i class="fas fa-camera"></i> Tomar Foto</a
-            >
-            <a href="gallery.html" class="dropdown-item"
-              ><i class="fas fa-photo-video"></i> Mis Fotos</a
-            >
-            <a href="#" class="dropdown-item" data-modal-target="help-modal"
-              ><i class="fas fa-question-circle"></i> Ayuda</a
-            >
-            <a href="#" class="dropdown-item" data-modal-target="config-modal"
-              ><i class="fas fa-cog"></i> Configuración</a
-            >
-            <a href="index.html" class="dropdown-item"
-              ><i class="fas fa-sign-out-alt"></i> Salir</a
-            >
-          </div>
+<body>
+  <div class="container">
+    <div class="app-container">
+      <div class="header">
+        <div class="header-content">
+          <h1>Totem Photo</h1>
+          <p>Escanea para conectar</p>
         </div>
 
-        <div class="content">
-          <div class="qr-container">
-            <h2 class="qr-title">Scan me!</h2>
-            <div id="qrcode-display" class="qr-code">
-                </div>
-            <p style="font-size: 1.2rem; margin-bottom: 20px">
-              Escanea para ver tu foto
+        <button class="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="dropdown-menu">
+          <a href="photos.html" class="dropdown-item"><i class="fas fa-images"></i> Galería Principal</a>
+          <a href="take-photo.html" class="dropdown-item"><i class="fas fa-camera"></i> Tomar Foto</a>
+          <a href="gallery.html" class="dropdown-item"><i class="fas fa-photo-video"></i> Mis Fotos</a>
+          <a href="#" class="dropdown-item" data-modal-target="help-modal"><i class="fas fa-question-circle"></i>
+            Ayuda</a>
+          <a href="#" class="dropdown-item" data-modal-target="config-modal"><i class="fas fa-cog"></i>
+            Configuración</a>
+          <a href="index.html" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Salir</a>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="qr-container"
+          style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh;">
+          <h2 class="qr-title" style="margin-bottom: 20px; font-size: 2rem; color: #e879f9;">Scan me!</h2>
+
+          <div id="qrcode-display" class="qr-code"
+            style="background: white; padding: 20px; border-radius: 15px; margin-bottom: 20px;"></div>
+
+          <p style="font-size: 1.2rem; margin-bottom: 30px; text-align: center;">
+            Escanea para descargar tu foto
+          </p>
+
+          <div class="timer-display"
+            style="text-align: center; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; width: 100%; max-width: 400px;">
+            <p id="timer-message" style="font-size: 1.1rem; margin-bottom: 15px;">
+              Regresando a <i class="fas fa-camera"></i> en <span id="countdown-timer"
+                style="color: #e879f9; font-weight: bold;">30</span> segundos...
             </p>
 
-            <div class="timer-display" style="margin-top: 20px;">
-                <p id="timer-message" style="font-size: 1.1rem; margin-bottom: 10px;">
-                    Regresando a <i class="fas fa-camera"></i> en <span id="countdown-timer">10</span> segundos...
-                </p>
-
-                <a
-                    href="take-photo.html"
-                    class="btn"
-                    style="max-width: 300px; margin: 0 auto; display: block; margin-bottom: 10px;"
-                    >Tomar otra foto ahora</a
-                >
-
-                <a
-                    href="photos.html"
-                    class="btn"
-                    style="max-width: 300px; margin: 0 auto; background-color: #555;"
-                    >Menú Principal</a
-                >
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+              <a href="take-photo.html" class="btn" style="width: auto; min-width: 150px;">
+                Nueva Foto
+              </a>
+              <a href="photos.html" class="btn"
+                style="background-color: rgba(255,255,255,0.2); width: auto; min-width: 150px;">
+                Menú
+              </a>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div id="help-modal" class="modal">
-        <div class="modal-content">
-            <button class="close-modal">&times;</button>
-            <h2 class="page-title">AYUDA</h2>
-            <div class="page-text">
-                <p>Bienvenido a la sección de ayuda de Totem Photo.</p>
-                <p>Si tienes problemas para iniciar sesión, toma de fotos o cualquier otra función, no dudes en contactarnos.</p>
-                <p><strong>Email:</strong> support@totemphoto.com</p>
-                <p><strong>Teléfono:</strong> +1 234 567 890</p>
-            </div>
-        </div>
+  <div id="help-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-modal">&times;</button>
+      <h2 class="page-title">AYUDA</h2>
+      <div class="page-text">
+        <p>...</p>
+      </div>
     </div>
-
-    <div id="config-modal" class="modal">
-        <div class="modal-content">
-            <button class="close-modal">&times;</button>
-            <h2 class="page-title">CONFIGURACIÓN</h2>
-            <div class="form-container" style="box-shadow: none; padding: 0">
-                <div class="form-group">
-                    <label for="language">Idioma</label>
-                    <select id="language">
-                        <option value="es">Español</option>
-                        <option value="en">English</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="quality">Calidad de imagen</label>
-                    <select id="quality">
-                        <option value="high">Alta</option>
-                        <option value="medium">Media</option>
-                        <option value="low">Baja</option>
-                    </select>
-                </div>
-                <div class="form-group" style="display: flex; align-items: center; gap: 10px">
-                    <input type="checkbox" id="notifications" checked style="width: auto" />
-                    <label for="notifications" style="margin: 0">Notificaciones</label>
-                </div>
-                <button class="btn">Guardar</button>
-            </div>
-        </div>
+  </div>
+  <div id="config-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-modal">&times;</button>
+      <h2 class="page-title">CONFIGURACIÓN</h2>
+      <div class="form-container" style="box-shadow: none; padding: 0;">
+      </div>
     </div>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 1. Obtener la URL de los parámetros de consulta
-            const urlParams = new URLSearchParams(window.location.search);
-            const imageUrl = urlParams.get('url');
-            const qrTargetDiv = document.getElementById('qrcode-display');
+  </div>
 
-            if (imageUrl) {
-                const decodedUrl = decodeURIComponent(imageUrl);
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 1. Intentar obtener URL de los parámetros (prioridad alta)
+      const urlParams = new URLSearchParams(window.location.search);
+      let imageUrl = urlParams.get('url');
 
-                // 2. Generar el Código QR
-                if (window.QRCode) {
-                    new QRCode(qrTargetDiv, {
-                        text: decodedUrl,
-                        width: 250,
-                        height: 250,
-                        colorDark: "#1a1a2e", 
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
-                } else {
-                    qrTargetDiv.innerHTML = '<p style="color:red;">Error: Librería QR no cargada.</p>';
-                }
+      // 2. Si no hay parámetros, intentar recuperar la última foto tomada (prioridad media)
+      if (!imageUrl) {
+        imageUrl = localStorage.getItem('lastPhotoUrl');
+      }
 
-            } else {
-                qrTargetDiv.innerHTML = '<p>No se encontró la URL de la imagen.</p>';
-            }
-            
-            // --- 3. CONFIGURACIÓN DEL TEMPORIZADOR ---
-            
-            const DURATION = 10; // Segundos antes de la redirección
-            const countdownTimer = document.getElementById('countdown-timer');
-            let timeLeft = DURATION;
-            
-            // Redirección principal después de 10 segundos
-            const redirectTimeout = setTimeout(() => {
-                window.location.href = 'take-photo.html';
-            }, DURATION * 1000);
-            
-            // Intervalo para actualizar el contador visual
-            const countdownInterval = setInterval(() => {
-                timeLeft--;
-                if (countdownTimer) {
-                    countdownTimer.textContent = timeLeft;
-                }
-                
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                }
-            }, 1000);
-            
-            
-            // Opcional: Limpiar temporizadores si el usuario hace clic en un enlace
-            document.querySelectorAll('.dropdown-menu a, .timer-display a').forEach(link => {
-                link.addEventListener('click', () => {
-                    clearTimeout(redirectTimeout);
-                    clearInterval(countdownInterval);
-                });
-            });
+      const qrTargetDiv = document.getElementById('qrcode-display');
+      const titleText = document.querySelector('.qr-title');
+      const descText = document.querySelector('p[style*="font-size: 1.2rem"]');
 
+      if (imageUrl) {
+        const decodedUrl = decodeURIComponent(imageUrl);
+
+        // Generar QR
+        if (window.QRCode) {
+          qrTargetDiv.innerHTML = "";
+          new QRCode(qrTargetDiv, {
+            text: decodedUrl,
+            width: 280,
+            height: 280,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.L
+          });
+        }
+      } else {
+        // 3. Caso: No hay parámetros Y no hay foto en memoria
+        titleText.textContent = "Sin Fotos";
+        qrTargetDiv.innerHTML = '<div style="padding:40px; text-align:center; color:#555;"><i class="fas fa-camera-retro" style="font-size:3rem; margin-bottom:10px;"></i><br>No has tomado ninguna foto aún.</div>';
+        descText.textContent = "Ve a 'Tomar Foto' para empezar";
+
+        // Opcional: Ocultar el temporizador si no hay foto
+        const timerDisplay = document.querySelector('.timer-display');
+        if (timerDisplay) timerDisplay.style.display = 'none';
+      }
+
+      // --- CONFIGURACIÓN DEL TEMPORIZADOR ---
+      // Solo activar cuenta regresiva si estamos mostrando una foto
+      if (imageUrl) {
+        const DURATION = 30;
+        const countdownTimer = document.getElementById('countdown-timer');
+        let timeLeft = DURATION;
+
+        const redirectTimeout = setTimeout(() => {
+          window.location.href = 'take-photo.html';
+        }, DURATION * 1000);
+
+        const countdownInterval = setInterval(() => {
+          timeLeft--;
+          if (countdownTimer) countdownTimer.textContent = timeLeft;
+          if (timeLeft <= 0) clearInterval(countdownInterval);
+        }, 1000);
+
+        document.querySelectorAll('a, button').forEach(el => {
+          el.addEventListener('click', () => {
+            clearTimeout(redirectTimeout);
+            clearInterval(countdownInterval);
+          });
         });
-    </script>
-  </body>
+      }
+
+      // Menú
+      const menuToggle = document.querySelector('.menu-toggle');
+      const dropdownMenu = document.querySelector('.dropdown-menu');
+      if (menuToggle) {
+        menuToggle.addEventListener('click', () => dropdownMenu.classList.toggle('show'));
+      }
+    });
+  </script>
+</body>
+
 </html>
