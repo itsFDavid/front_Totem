@@ -193,10 +193,9 @@ body {
 }
 
 .carousel-item img {
-  width: 100%;
-  height: 100%;
+  width: 100px
+  height: 100px;
   object-fit: contain;
-  transform: rotate(90deg);
   border-radius: 8px;
 }
 
@@ -207,11 +206,6 @@ body {
   z-index: 5;
 }
 
-.carousel-controls {
-  display: flex;
-  justify-content: center;
-  margin-top: 15px;
-}
 
 .carousel-control {
   background-color: rgba(0, 0, 0, 0.2); /* Sutil opacidad negra */
@@ -239,39 +233,6 @@ body {
 
 .carousel-control:hover {
   background-color: rgba(0, 0, 0, 0.5);
-}
-
-.templates-section {
-  margin-top: 20px;
-}
-
-.templates-title {
-  text-align: center;
-  margin-bottom: 15px;
-  font-size: 1.5rem;
-  color: #e879f9;
-}
-
-.templates-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 15px;
-}
-
-.template-item {
-  height: 100px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.template-item:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: scale(1.05);
 }
 
 /* Estilos para la página QR */
@@ -449,6 +410,7 @@ body {
 .camera-controls {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 15px;
   margin-bottom: 20px;
   flex-wrap: wrap;
@@ -496,7 +458,7 @@ body {
 
 .gallery-item {
   position: relative;
-  aspect-ratio: 1;
+  aspect-ratio: 4 /5;
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
@@ -512,8 +474,6 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Corrección de rotación para grid/galería */
-  transform: rotate(90deg);
 }
 
 .gallery-item-actions {
@@ -581,8 +541,6 @@ body {
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
-  /* Corrección de rotación para la imagen en el visor */
-  transform: rotate(90deg);
 }
 
 .photo-viewer-close {
@@ -729,23 +687,11 @@ body {
 
 /* Corrección de rotación para las imágenes dentro del carrusel */
 .carousel-item img {
-  width: 100%;
-  height: 100%;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
-  /* QUITADO: background-color: #ffffff; */
   transform: rotate(90deg);
   border-radius: 8px;
-}
-
-/* Corrección de rotación para las imágenes en el Grid de Plantillas (sidebar) */
-#templates-grid .gallery-item img,
-.template-selection-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  /* QUITADO: background-color: #ffffff; */
-  display: block;
-  transform: rotate(90deg);
 }
 
 /* --- Estilos específicos para take-photo.html --- */
@@ -756,8 +702,11 @@ body {
 }
 
 .templates-sidebar {
-  width: 250px;
+  width: 360px;
   padding: 10px;
+  max-height: 520px;
+  display: flex;
+  flex-direction: column;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -773,20 +722,46 @@ body {
 .templates-grid-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-height: 400px;
-  overflow-y: auto;
+  gap: 12px;
+  overflow-y: auto;      
+  flex-grow: 1;          
+  padding-right: 6px;    
 }
 
+.templates-grid-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.templates-grid-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(232, 121, 249, 0.6);
+  border-radius: 10px;
+}
+
+.templates-grid-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
 .template-selection-item {
-  height: 120px; /* Tamaño más grande para visualización */
   width: 100%;
-  border: 3px solid transparent;
-  border-radius: 8px;
+  aspect-ratio: 4 / 5;   
+  border: 2px solid transparent;
+  max-width: 320px;
+  min-height: 400px;
+  margin: 0 auto;
+  border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.template-selection-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        
+  display: block;
 }
 
 .template-selection-item.selected {
@@ -794,8 +769,17 @@ body {
   box-shadow: 0 0 15px #e879f9;
 }
 
+.template-selection-item:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 20px rgba(232, 121, 249, 0.5);
+}
+
+
 .camera-container {
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   max-width: calc(100% - 270px);
 }
 
@@ -846,23 +830,89 @@ body {
 @media (max-width: 768px) {
   .camera-layout {
     flex-direction: column;
-  }
+    justify-content: center;
+    align-items: center;
+    }
   .templates-sidebar {
     width: 100%;
-    max-height: 150px;
+    max-height: 300px;
   }
   .templates-grid-sidebar {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    max-height: 150px;
-  }
-  .template-selection-item {
-    min-width: 100px;
-    height: 100px;
+    max-height: 300px;
   }
   .camera-container {
     max-width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .templates-sidebar {
+    width: 320px;
+  }
+
+  .template-selection-item {
+    max-width: 300px;
+    min-height: 360px;
+  }
+}
+
+.switch-camera-btn {
+  right: 30px;
+
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 22px;
+
+  border: 2px solid #e879f9;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.switch-camera-btn:hover {
+  transform: scale(1.1);
+  background: rgba(232, 121, 249, 0.7);
+}
+
+@media (max-width: 768px) {
+  .switch-camera-btn {
+    display: flex;
+
+    right: 24px;
+
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+
+    background: linear-gradient(135deg, #e879f9, #c084fc);
+    color: #fff;
+
+    font-size: 22px;
+    font-weight: bold;
+
+    border: none;
+    box-shadow: 0 6px 20px rgba(232, 121, 249, 0.6);
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    z-index: 20;
+
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .switch-camera-btn:active {
+    transform: scale(0.92);
+    box-shadow: 0 4px 12px rgba(232, 121, 249, 0.8);
   }
 }
 
@@ -931,8 +981,8 @@ carousel-section {
 }
 
 .carousel-item img {
-  width: 100%;
-  height: 100%;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
   border-radius: 8px;
   cursor: pointer;
@@ -978,31 +1028,8 @@ carousel-section {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 20px;
-  padding: 10px;
-}
-
-.gallery-item {
-  position: relative;
-  aspect-ratio: 1;
-  border-radius: 10px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
 .gallery-item:hover {
   transform: scale(1.05);
-}
-
-.gallery-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .btn {
@@ -1059,14 +1086,52 @@ carousel-section {
   border: none;
   z-index: 2001;
 }
+/* ===== Carrusel tipo banda transportadora ===== */
+.carousel-container {
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px 0;
+  position: relative;
+  /* Máscara para desvanecer los bordes (efecto profesional) */
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
 
-@media (max-width: 768px) {
-  .carousel {
-    height: 300px;
-  }
+.carousel-track {
+  display: flex;
+  gap: 20px;
+  width: max-content; /* IMPORTANTE: Obliga a que sea una sola fila larga */
+  /* Animación infinita */
+  animation: scroll 30s linear infinite; 
+}
+        
+/* Pausar animación si pasas el mouse por encima */
+.carousel-track:hover {
+    animation-play-state: paused;
+}
 
-  .carousel-item {
-    width: 50%;
-    min-width: 50%;
-  }
+/* Definición de la animación de desplazamiento */
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        /* Se mueve exactamente la mitad, donde empieza la copia exacta */
+        transform: translateX(-50%);
+    }
+}
+
+.carousel-slide {
+    min-width: 100px;
+    width: 200px;
+    aspect-ratio: 4 / 5;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Asegura que no se aplasten */
 }

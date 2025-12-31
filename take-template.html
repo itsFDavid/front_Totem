@@ -269,6 +269,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
+                    await new Promise(resolve => setTimeout(resolve, 8000));
                     loadingOverlay.style.display = 'none';
                     statusMessage.innerHTML = `<i class="fas fa-check-circle"></i> Plantilla creada exitosamente.<br>Redirigiendo...`;
                     statusMessage.style.color = '#79e879';

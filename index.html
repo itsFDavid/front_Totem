@@ -135,12 +135,10 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // --- Lógica Existente (Cambio de Pestañas) ---
         const goToSignup = document.getElementById("go-to-signup");
         const goToLogin = document.getElementById("go-to-login");
         const loginSection = document.getElementById("login-section");
         const signupSection = document.getElementById("signup-section");
-        // get access token from url query params ?access_token=...
         const urlParams = new URLSearchParams(window.location.search);
 
         if(urlParams.has("access_token")) {
