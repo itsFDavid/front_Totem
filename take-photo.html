@@ -178,14 +178,15 @@
         }
 
         // Función para cargar templates (Privados + Públicos)
-            async function loadTemplates() {
-                // 1. Cargar mis plantillas privadas
-                const myTemplates = await fetchData('/templates/my') || [];
+        async function loadTemplates() {
+                // OPTIMIZACIÓN: Cargar ambas listas al mismo tiempo (en paralelo)
+                // Esto reduce el tiempo de espera casi a la mitad.
+                const [myTemplates, publicTemplates] = await Promise.all([
+                    fetchData('/templates/my').then(res => res || []),
+                    fetchData('/templates/public').then(res => res || [])
+                ]);
 
-                // 2. Cargar plantillas públicas (del sistema)
-                const publicTemplates = await fetchData('/templates/public') || [];
-
-                // 3. Combinar ambas listas (ponemos las públicas primero para que se vean al principio)
+                // Combinar (públicas primero)
                 const allTemplates = [...publicTemplates, ...myTemplates];
 
                 templatesGrid.innerHTML = '';
@@ -203,16 +204,15 @@
                     item.className = 'template-selection-item';
                     item.dataset.uuid = template.uuid;
 
-                    // Agregamos un pequeño punto rosa si es una plantilla pública/sistema
                     let publicBadge = "";
                     if (template.is_public) {
                         publicBadge = `<div style="position:absolute; top:5px; right:5px; background:#e879f9; color:white; font-size:10px; padding:2px 6px; border-radius:10px; z-index:2; box-shadow:0 2px 4px rgba(0,0,0,0.5);">Sistema</div>`;
                     }
 
-                    // Renderizamos la imagen y el badge
+                    // Usamos carga perezosa (lazy) para que no bloquee el navegador si hay muchas
                     item.innerHTML = `
                     ${publicBadge}
-                    <img src="${template.url}" alt="Template ${index + 1}">
+                    <img src="${template.url}" loading="lazy" alt="Template ${index + 1}">
                 `;
 
                     item.addEventListener('click', () => {
@@ -365,56 +365,69 @@
             const token = checkAuthentication();
             if (!token) return;
 
-            // 1. DETENER EL STREAM ANTERIOR CORRECTAMENTE
+            // 1. LIMPIEZA PROFUNDA DEL STREAM ANTERIOR
             if (currentStream) {
                 currentStream.getTracks().forEach(track => {
-                    track.stop(); // Detiene el hardware
+                    track.stop(); // Detener hardware
+                    track.enabled = false;
                 });
             }
 
-            // 2. LIMPIAR LA ETIQUETA DE VIDEO (Crucial en iOS/Android)
             if (video.srcObject) {
                 video.srcObject = null;
             }
             currentStream = null;
 
-            // Esperamos 300ms para que el SO libere la cámara totalmente.
+            // Pausa vital para iOS/Android
             await new Promise(resolve => setTimeout(resolve, 300));
 
             try {
-                // Intentar configuración exacta primero
+                // --- INTENTO 1: Calidad HD con cámara exacta ---
+                // Ideal para cámara trasera o webcams buenas
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: { exact: currentFacingMode },
-                        width: { ideal: 1920 }, // Pedir alta resolución si es posible
+                        width: { ideal: 1920 },
                         height: { ideal: 1080 }
                     },
                     audio: false
                 });
-
                 handleStreamSuccess(stream);
 
-            } catch (err) {
-                console.warn('Fallo constraints "exact", intentando modo flexible...', err);
+            } catch (errHD) {
+                console.warn('Fallo HD exacto, intentando resolución estándar...', errHD);
 
-                // Fallback: Modo flexible (necesario para algunos Androids/iOS antiguos)
                 try {
+                    // --- INTENTO 2: Cámara exacta SIN restricciones de resolución ---
+                    // ESTO SOLUCIONA EL ERROR EN MÓVILES (Cámaras frontales simples)
                     const stream = await navigator.mediaDevices.getUserMedia({
                         video: {
-                            facingMode: currentFacingMode,
-                            width: { ideal: 1920 },
-                            height: { ideal: 1080 }
+                            facingMode: { exact: currentFacingMode }
                         },
                         audio: false
                     });
-
                     handleStreamSuccess(stream);
 
-                } catch (finalErr) {
-                    console.error('Error fatal accediendo a cámara:', finalErr);
-                    messageDiv.textContent = 'Error: No se puede cambiar de cámara. Verifica permisos.';
-                    messageDiv.style.color = '#ff6b6b';
-                    captureBtn.disabled = true;
+                } catch (errStandard) {
+                    console.warn('Fallo estándar exacto, intentando modo flexible...', errStandard);
+
+                    try {
+                        // --- INTENTO 3: Modo "lo que sea" (Fallback final) ---
+                        // Si 'exact' falla (ej. en PC sin cámara trasera), usamos 'user' o 'environment' como preferencia
+                        const stream = await navigator.mediaDevices.getUserMedia({
+                            video: {
+                                facingMode: currentFacingMode
+                            },
+                            audio: false
+                        });
+                        handleStreamSuccess(stream);
+
+                    } catch (finalErr) {
+                        console.error('Error fatal accediendo a cámara:', finalErr);
+                        messageDiv.textContent = 'Error: No se pudo acceder a la cámara. Verifica permisos o cierra otras apps.';
+                        messageDiv.style.color = '#ff6b6b';
+                        captureBtn.disabled = true;
+                    }
                 }
             }
         }
@@ -429,11 +442,6 @@
             video.onloadedmetadata = () => {
                 video.play();
             };
-
-            // Cargar templates solo la primera vez
-            if (!templatesGrid.hasChildNodes()) {
-                loadTemplates();
-            }
         }
 
         async function checkMultipleCameras() {
@@ -461,6 +469,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             captureBtn.addEventListener('click', captureAndIntegrate);
             captureBtn.disabled = true;
+
+            // 1. Iniciar carga de plantillas INMEDIATAMENTE (mientras carga la cámara)
+            loadTemplates();
+
+            // 2. Iniciar cámara en paralelo
             startCamera();
         });
     </script>
