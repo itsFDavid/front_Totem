@@ -354,6 +354,33 @@
             display: flex !important;
             /* Forzar display flex al activarse */
         }
+        .delete-template-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px; /* Misma posición que el badge, pero solo saldrá si NO es pública */
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            opacity: 0; /* Oculto hasta hover */
+        }
+
+        .template-item:hover .delete-template-btn {
+            opacity: 1;
+        }
+
+        .delete-template-btn:hover {
+            background: red;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 
@@ -639,7 +666,7 @@
             viewer.classList.add('show');
         }
 
-        async function renderTemplates(templates) {
+        function renderTemplates(templates) {
             const templatesGrid = document.getElementById("templates-grid");
             const templatesEmpty = document.getElementById("templates-empty");
 
@@ -654,36 +681,42 @@
             templatesEmpty.style.display = "none";
             templatesGrid.style.display = "grid";
 
-            const secureUrls = await Promise.all(
-                templates.map((template) => getSecureImageUrl(template.url))
-            );
-
             templates.forEach((template, index) => {
-                const secureUrl = secureUrls[index];
-                if (!secureUrl) return;
-
                 const item = document.createElement("div");
                 item.className = "gallery-item template-item";
 
-                let badge = "";
+                let overlayElement = "";
+
+                // LÓGICA: Si es pública -> Badge "Sistema"
+                //         Si es privada -> Botón "Borrar"
                 if (template.is_public) {
-                    badge = `<span style="position:absolute; top:10px; right:10px; background:#e879f9; color:white; padding:2px 8px; border-radius:10px; font-size:0.7rem; z-index:2;">Sistema</span>`;
+                    overlayElement = `<span style="position:absolute; top:10px; right:10px; background:#e879f9; color:white; padding:2px 8px; border-radius:10px; font-size:0.7rem; z-index:2;">Sistema</span>`;
+                } else {
+                    // Es privada, agregamos botón de borrar
+                    // stopPropagation evita que al hacer clic en borrar se abra el visor de la foto
+                    overlayElement = `
+                        <button class="delete-template-btn" 
+                                onclick="event.stopPropagation(); deleteTemplate('${template.uuid}')" 
+                                title="Eliminar Plantilla">
+                            <i class="fas fa-trash-alt" style="font-size: 0.8rem;"></i>
+                        </button>`;
                 }
 
                 const imgElement = document.createElement('img');
-                imgElement.src = secureUrl;
+                imgElement.src = template.url; 
                 imgElement.alt = `Template ${index + 1}`;
+                imgElement.loading = "lazy"; 
 
-                imgElement.addEventListener('click', () => {
-                    viewTemplate(template.uuid, secureUrl);
+                // Al hacer clic en la imagen (item), se abre el visor
+                item.addEventListener('click', () => {
+                    viewTemplate(template.uuid, template.url);
                 });
 
-                item.innerHTML = badge; // Insertamos el badge antes de la imagen
+                item.innerHTML = overlayElement; // Insertamos Badge o Botón
                 item.appendChild(imgElement);
                 templatesGrid.appendChild(item);
             });
         }
-
         async function loadUserPhotosAndTemplates() {
             // 1. Cargar carrusel de imágenes integradas
             await loadCarouselImages();
@@ -718,6 +751,33 @@
             e.preventDefault();
             localStorage.removeItem("accessToken");
             window.location.href = "index.html";
+        }
+
+        async function deleteTemplate(uuid) {
+            if (!confirm("¿Seguro que deseas eliminar esta plantilla? Esta acción no se puede deshacer.")) {
+                return;
+            }
+
+            const token = checkAuthentication();
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/templates/my/${uuid}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Recargar la lista de plantillas y fotos
+                    loadUserPhotosAndTemplates();
+                } else {
+                    alert("No se pudo eliminar la plantilla. Puede que sea del sistema.");
+                }
+            } catch (error) {
+                console.error("Error eliminando plantilla:", error);
+            }
         }
 
         document.querySelector(".photo-viewer-close").addEventListener("click", function () {

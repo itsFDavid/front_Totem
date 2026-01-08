@@ -9,6 +9,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
+<style>
+    .gallery-item-actions button.delete-btn {
+    color: #ff6b6b; /* Rojo para el botón de borrar */
+}
+.gallery-item-actions button.delete-btn:hover {
+    color: #ff4c4c;
+    transform: scale(1.1);
+}
+</style>
+
 <body>
     <div class="container">
         <div class="app-container">
@@ -203,6 +213,7 @@
                 
                 actionsDiv.innerHTML = `
                     <button onclick="downloadPhoto('${uuid}', '${imageUrl}')" title="Descargar"><i class="fas fa-download"></i></button>
+                    <button onclick="deletePhoto('${uuid}')" class="delete-btn" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                 `;
                 
                 // Montar el item:
@@ -234,10 +245,38 @@
         }
 
         // Delete photo 
-        function deletePhoto(uuid) {
-            if (confirm(`¿Estás seguro de que quieres eliminar la imagen ${uuid}?`)) {
-                console.warn(`Lógica de eliminación para ${uuid} no implementada en el frontend.`);
-                // Debes implementar el endpoint DELETE en tu API
+        async function deletePhoto(uuid) {
+            if (!confirm(`¿Estás seguro de que quieres eliminar esta imagen?`)) {
+                return;
+            }
+
+            const token = checkAuthentication();
+            if (!token) return;
+
+            try {
+                // Hacemos la petición DELETE al backend
+                const response = await fetch(`${API_BASE_URL}/templates/image/${uuid}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Si se borró correctamente, eliminamos el elemento visualmente sin recargar
+                    // Buscamos el botón que se presionó y subimos hasta el contenedor .gallery-item
+                    // Nota: Como no tenemos referencia directa al elemento aquí, recargaremos la lista
+                    // O mejor, buscamos el elemento por UUID si asignamos IDs, pero recargar es más seguro:
+                    loadIntegratedImages(); 
+                    
+                    // Opcional: Mostrar notificación
+                    alert("Imagen eliminada correctamente");
+                } else {
+                    alert("Error al eliminar la imagen");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error de conexión al eliminar");
             }
         }
 
