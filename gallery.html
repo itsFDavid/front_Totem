@@ -10,14 +10,27 @@
 </head>
 
 <style>
-    .gallery-item-actions button.delete-btn {
-    color: #ff6b6b; /* Rojo para el botón de borrar */
-}
-.gallery-item-actions button.delete-btn:hover {
-    color: #ff4c4c;
-    transform: scale(1.1);
-}
-</style>
+        .gallery-item-actions button.delete-btn {
+            color: #ff6b6b;
+        }
+        .gallery-item-actions button.delete-btn:hover {
+            color: #ff4c4c;
+            transform: scale(1.1);
+        }
+        .gallery-item-actions {
+                opacity: 1 !important; /* Siempre visible en celular */
+                background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        }
+
+        /* --- NUEVO: Forzar visibilidad en móviles --- */
+        @media (max-width: 768px) {
+            /* Hacemos los botones un poco más grandes para el dedo */
+            .gallery-item-actions button {
+                padding: 10px 15px; 
+                font-size: 1.4rem;
+            }
+        }
+    </style>
 
 <body>
     <div class="container">
